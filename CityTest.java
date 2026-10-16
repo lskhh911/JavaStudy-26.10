@@ -3,15 +3,21 @@ public class CityTest {
     public static void main(String[] args) {
         City bj = new City();
         bj.name = "Beijing";
-        bj.latitude = 39.903;
-        bj.longitude = 116.401;
+        Double latitude = bj.get_lat();
+        Double longitude = bj.get_log();
         System.out.println(bj.name);
-        System.out.println("location: " + bj.latitude + ", " + bj.longitude);
+        System.out.println("location: " + latitude + ", " + longitude);
     }
 }
 
 class City {
 	public String name;
-	public Double latitude;
-	public Double longitude;
+	private Double latitude = 10.0;
+	private Double longitude = 20.0;
+	public Double get_lat() {
+		return this.latitude;
+	}
+	public Double get_log() {
+		return this.longitude;
+	}
 }
