@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<title>照片 · 图库</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230a84ff'/%3E%3Ccircle cx='50' cy='50' r='20' fill='none' stroke='white' stroke-width='7'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ============================ 启动遮罩 ============================ -->
+<div id="boot" class="boot">
+  <div class="boot-inner">
+    <div class="boot-logo">
+      <svg viewBox="0 0 100 100" width="56" height="56"><circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-dasharray="150 62"/><circle cx="50" cy="50" r="12" fill="currentColor"/></svg>
+    </div>
+    <div class="boot-text">正在载入照片库…</div>
+    <div class="boot-bar"><i id="bootBar"></i></div>
+  </div>
+</div>
+
+<!-- ============================ 主框架 ============================ -->
+<div id="app" class="app" hidden>
+  <aside class="sidebar" id="sidebar">
+    <div class="side-head">
+      <div class="brand">照片</div>
+      <button class="icon-btn only-narrow" id="closeSidebar" title="收起">✕</button>
+    </div>
+
+    <nav class="side-nav" id="sideNav">
+      <button class="nav-item" data-view="library">
+        <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>
+        <span>图库</span>
+      </button>
+      <button class="nav-item" data-view="favorites">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-9.4A4.1 4.1 0 0 1 12 7.6a4.1 4.1 0 0 1 7.5 3C19.5 15.4 12 20 12 20z"/></svg>
+        <span>收藏</span><em class="nav-count" id="cntFav"></em>
+      </button>
+      <button class="nav-item" data-view="live">
+        <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7.5" stroke-dasharray="2 3"/></svg>
+        <span>实况照片</span><em class="nav-count" id="cntLive"></em>
+      </button>
+      <button class="nav-item" data-view="videos">
+        <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="5" width="13" height="14" rx="2.5"/><path d="M16 10.5 21 7.5v9l-5-3z"/></svg>
+        <span>视频</span><em class="nav-count" id="cntVid"></em>
+      </button>
+    </nav>
+
+    <div class="side-scroll">
+      <div class="side-label">年份</div>
+      <div class="year-list" id="yearList"></div>
+      <div class="side-label">设备</div>
+      <div class="place-list" id="deviceList"></div>
+    </div>
+
+    <div class="side-foot">
+      <div id="footStats">—</div>
+      <div class="side-actions">
+        <button class="ghost-btn" id="btnSettings">设置</button>
+        <button class="ghost-btn" id="btnSlideshow">幻灯片</button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="icon-btn only-narrow" id="openSidebar" title="侧栏">☰</button>
+      <div class="title-wrap">
+        <h1 id="title">图库</h1>
+        <span class="subtitle" id="subtitle"></span>
+      </div>
+
+      <div class="topbar-tools">
+        <div class="seg" id="modeSeg" role="tablist">
+          <button data-mode="year" role="tab">年</button>
+          <button data-mode="month" role="tab">月</button>
+          <button data-mode="day" role="tab" class="on">全部</button>
+        </div>
+
+        <div class="search">
+          <svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+          <input id="search" type="search" placeholder="搜索日期、名称" autocomplete="off" spellcheck="false">
+        </div>
+
+        <div class="density" title="网格大小（也可用 - / + 或 Ctrl+滚轮）">
+          <button class="icon-btn" id="zoomOut" aria-label="更密">−</button>
+          <input id="densityRange" type="range" min="2" max="12" step="1" value="6">
+          <button class="icon-btn" id="zoomIn" aria-label="更疏">+</button>
+        </div>
+
+        <button class="icon-btn" id="btnInfo" title="信息">ⓘ</button>
+      </div>
+    </header>
+
+    <div class="banner" id="banner" hidden></div>
+
+    <div class="scroller" id="scroller">
+      <div class="content" id="content"></div>
+      <div class="empty" id="empty" hidden>
+        <div class="empty-ico">🔍</div>
+        <p>没有找到照片</p>
+      </div>
+    </div>
+
+    <div class="scroll-top" id="scrollTop" hidden title="回到顶部">
+      <svg viewBox="0 0 24 24"><path d="M12 19V6M6 12l6-6 6 6"/></svg>
+    </div>
+  </main>
+</div>
+
+<!-- ============================ 查看器 ============================ -->
+<div id="viewer" class="viewer" hidden>
+  <div class="viewer-bg"></div>
+
+  <div class="v-top">
+    <button class="v-btn" id="vClose" title="返回 (Esc)">
+      <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <div class="v-title">
+      <div id="vDate">—</div>
+      <div id="vSub" class="v-sub"></div>
+    </div>
+    <div class="v-actions">
+      <button class="v-btn" id="vLive" title="播放实况 (空格)" hidden>
+        <span class="live-ring"></span><span class="live-word">实况</span>
+      </button>
+      <button class="v-btn" id="vFav" title="收藏 (F)">
+        <svg viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-9.4A4.1 4.1 0 0 1 12 7.6a4.1 4.1 0 0 1 7.5 3C19.5 15.4 12 20 12 20z"/></svg>
+      </button>
+      <button class="v-btn" id="vInfo" title="信息 (I)">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.6v.2"/></svg>
+      </button>
+      <button class="v-btn" id="vPlay" title="幻灯片 (S)">
+        <svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z"/></svg>
+      </button>
+      <button class="v-btn" id="vFull" title="全屏">
+        <svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+      </button>
+      <button class="v-btn" id="vDownload" title="下载/另存">
+        <svg viewBox="0 0 24 24"><path d="M12 4v11M7 10.5l5 5 5-5M5 19.5h14"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="v-stage" id="vStage">
+    <div class="v-track" id="vTrack">
+      <img id="vImg" class="v-img" alt="" draggable="false">
+      <video id="vLiveVid" class="v-livevid" playsinline preload="none"></video>
+      <video id="vVid" class="v-vid" playsinline preload="metadata" controls></video>
+    </div>
+    <div class="v-loading" id="vLoading"><i></i></div>
+  </div>
+
+  <button class="v-nav prev" id="vPrev" title="上一张 (←)">
+    <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+  </button>
+  <button class="v-nav next" id="vNext" title="下一张 (→)">
+    <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+  </button>
+
+  <div class="v-bottom">
+    <div class="v-scrub">
+      <input id="vScrub" type="range" min="0" max="100" value="0">
+      <div class="v-counter"><span id="vPos">0</span> / <span id="vTotal">0</span></div>
+    </div>
+  </div>
+
+  <aside class="v-info" id="vInfoPanel" hidden>
+    <div class="v-info-head">
+      <h3>信息</h3>
+      <button class="icon-btn" id="vInfoClose">✕</button>
+    </div>
+    <div class="v-info-body" id="vInfoBody"></div>
+  </aside>
+</div>
+
+<!-- ============================ 设置 ============================ -->
+<div id="settings" class="sheet" hidden>
+  <div class="sheet-box">
+    <div class="sheet-head">
+      <h3>设置</h3>
+      <button class="icon-btn" id="settingsClose">✕</button>
+    </div>
+    <div class="sheet-body">
+      <label class="row">
+        <span>外观</span>
+        <select id="setTheme">
+          <option value="dark">深色</option>
+          <option value="light">浅色</option>
+          <option value="auto">跟随系统</option>
+        </select>
+      </label>
+      <label class="row">
+        <span>悬停预览实况照片</span>
+        <input type="checkbox" id="setHoverLive">
+      </label>
+      <label class="row">
+        <span>打开时自动播放实况</span>
+        <input type="checkbox" id="setAutoLive">
+      </label>
+      <label class="row">
+        <span>幻灯片间隔</span>
+        <select id="setSlide">
+          <option value="2500">2.5 秒</option>
+          <option value="3500">3.5 秒</option>
+          <option value="5000">5 秒</option>
+          <option value="8000">8 秒</option>
+        </select>
+      </label>
+      <label class="row">
+        <span>显示文件信息角标</span>
+        <input type="checkbox" id="setBadges">
+      </label>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+<div id="hoverPreview" class="hover-preview"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
