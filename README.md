@@ -1,6 +1,10 @@
-10.15 git HelloWorld文件
-10.16
-JavaSE 输入：import java.util.Scanner;
+10.15:
+
+git HelloWorld文件
+
+10.16输入：
+
+import java.util.Scanner;
 	
 public class Main {
     public static void main(String[] args) {
@@ -11,6 +15,7 @@ public class Main {
         int currentScore = sc.nextInt();
 
 10.16 继承：
+
 class Person {
     protected String name;
     protected int age;
