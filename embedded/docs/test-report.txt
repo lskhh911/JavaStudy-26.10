@@ -1,0 +1,27 @@
+== T1 smoke: P1 C1 N1 K5 ==
+[PASS] T1 single producer/consumer
+== T2 basic concurrency: P3 C3 N5 K20 ==
+[PASS] T2 basic concurrency
+== T3 full-buffer blocking: N1, slow consumer ==
+[PASS] T3 full-buffer blocking
+== T4 empty-buffer blocking: N1, slow producer ==
+[PASS] T4 empty-buffer blocking
+== T5 stress: P8 C8 N64 K50000 ==
+[PASS] T5 stress 400k items
+== T6 large buffer: P4 C4 N1024 K10000 ==
+[PASS] T6 large buffer
+== T7 invalid arguments ==
+[PASS] T7a producers=0
+[PASS] T7b buffer=0
+[PASS] T7c items=0
+[PASS] T7d unknown option
+== T10 repeatability: T2 x20 ==
+[PASS] T10 repeatability 20/20
+== T8 AddressSanitizer + UBSan ==
+[PASS] T8a ASan/UBSan smoke
+[PASS] T8b ASan/UBSan concurrency
+== T9 ThreadSanitizer ==
+[PASS] T9a TSan basic
+[PASS] T9b TSan stress
+
+TEST_SUMMARY passed=15 failed=0
